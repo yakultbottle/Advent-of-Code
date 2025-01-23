@@ -1,12 +1,10 @@
-import heapq
-
 input = open(0).read().strip().split("\n")
 grid = [[char for char in line] for line in input]
 
 W, H = len(grid[0]), len(grid)
 
-num_extra_rows = 1000000
-cost = [[1 for _ in range(W)] for _ in range(H)]
+is_empty_x = []
+is_empty_y = []
 galaxies = []
 for y in range(H):
     empty = True
@@ -16,8 +14,7 @@ for y in range(H):
             galaxies.append((x, y))
 
     if empty:
-        for x in range(W):
-            cost[y][x] = num_extra_rows
+        is_empty_y.append(y)
 
 for x in range(W):
     empty = True
@@ -27,44 +24,25 @@ for x in range(W):
             break
 
     if empty:
-        for y in range(H):
-            cost[y][x] = num_extra_rows
+        is_empty_x.append(x)
 
-seen = [[False for _ in range(W)] for _ in range(H)]
-# dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
-dirs = [(1, 0), (0, 1), (-1, 0)] # This change goes from 20s -> 8s
-def bfs(og_x: int, og_y: int) -> int:
-    frontier = []
-    heapq.heappush(frontier, (0, og_x, og_y))
-    vis = [[False for _ in range(W)] for _ in range(H)]
-    sum = 0
-
-    while frontier:
-        dist, x, y = heapq.heappop(frontier)
-        vis[y][x] = True
-
-        if grid[y][x] == "#" and not seen[y][x]:
-            sum += dist
-
-        for dx, dy in dirs:
-            nx, ny = x + dx, y + dy
-
-            if not (nx in range(W) and ny in range(H)):
-                continue
-            if vis[ny][nx]:
-                continue
-
-            vis[ny][nx] = True
-            heapq.heappush(frontier, (dist + cost[ny][nx], nx, ny))
-
-    return sum
-
+empty_gap = 1000000 - 1
 dists = 0
-for x, y in galaxies:
-    if not seen[y][x] and grid[y][x] == "#":
-        temp = bfs(x, y)
-        dists += temp
-    seen[y][x] = True
+for i in range(len(galaxies)):
+    x1, y1 = galaxies[i]
+    for j in range(i + 1, len(galaxies)):
+        x2, y2 = galaxies[j]
+
+        diff = abs(x1 - x2) + abs(y1 - y2)
+
+        for empty_x in is_empty_x:
+            if min(x1, x2) < empty_x < max(x1, x2):
+                diff += empty_gap
+        for empty_y in is_empty_y:
+            if min(y1, y2) < empty_y < max(y1, y2):
+                diff += empty_gap
+
+        dists += diff
 
 print(dists)
 
