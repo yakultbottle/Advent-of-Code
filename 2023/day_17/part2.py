@@ -20,7 +20,8 @@ max_consecutive = 10
 min_to_turn = 4
 while pq:
     cost, x, y, num_consecutive, straight = heapq.heappop(pq)
-    if x == width - 1 and y == height - 1:
+
+    if x == width - 1 and y == height - 1 and num_consecutive >= min_to_turn:
         answer = cost
         break
 
