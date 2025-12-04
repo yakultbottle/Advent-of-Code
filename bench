@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+import sys, time, subprocess
+
+if len(sys.argv) < 2:
+    print("Usage: pybench script.py < input.txt")
+    sys.exit(1)
+
+cmd = ["python3", sys.argv[1]]
+
+start = time.perf_counter()
+proc = subprocess.run(cmd, stdin=sys.stdin, text=True)
+end = time.perf_counter()
+
+elapsed = end - start
+
+if elapsed < 1:
+    print(f"Time: {elapsed*1e3:.3f} ms")
+else:
+    print(f"Time: {elapsed:.3f} s")
