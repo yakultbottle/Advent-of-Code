@@ -15,7 +15,7 @@ splitters = set()
 
 while frontier:
     x, y = frontier.pop()
-    
+
     if grid[y][x] == "^":
         splitters.add((x, y))
         for dx, dy in ((x - 1, y), (x + 1, y)):

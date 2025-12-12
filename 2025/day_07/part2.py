@@ -16,7 +16,7 @@ def travel_down(start: tuple[int, int]) -> int:
 
     x, y = start
     count = 0
-    
+
     while (x in range(width) and y in range(height)) and grid[y][x] != "^":
         y += 1
 
