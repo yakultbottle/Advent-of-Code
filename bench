@@ -5,7 +5,7 @@ if len(sys.argv) < 2:
     print("Usage: pybench script.py < input.txt")
     sys.exit(1)
 
-cmd = ["python3", sys.argv[1]]
+cmd = ["uv", "run", "python", sys.argv[1]]
 
 start = time.perf_counter()
 proc = subprocess.run(cmd, stdin=sys.stdin, text=True)
