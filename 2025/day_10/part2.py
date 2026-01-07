@@ -53,7 +53,6 @@ for row in input:
     switches = tuple(tuple(map(int, switch[1:-1].split(","))) for switch in second)
     end_joltages = tuple(int(num) for num in third[1:-1].split(","))
 
-    memo = {}
     ans += num_presses(switches, end_joltages)
 
 print(ans)
