@@ -3,9 +3,9 @@ ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 alias bench="$ROOT/bench"
 alias aoc="cd \"$ROOT\""
 
-alias aos1="bench part1.py < small_test.txt"
-alias aos2="bench part2.py < small_test.txt"
-alias aot1="bench part1.py < test.txt"
-alias aot2="bench part2.py < test.txt"
+alias aos1="bench part1.py < example.txt"
+alias aos2="bench part2.py < example.txt"
+alias aot1="bench part1.py < input.txt"
+alias aot2="bench part2.py < input.txt"
 alias aoc1='aos1; echo; aot1'
 alias aoc2='aos2; echo; aot2'
