@@ -1,5 +1,11 @@
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+if [ -f "$ROOT/.env" ]; then
+    source "$ROOT/.env"
+else
+    echo "Add cookie for advent of code into .env file"
+fi
+
 alias bench="$ROOT/bench"
 alias aoc="cd \"$ROOT\""
 
@@ -9,3 +15,19 @@ alias aot1="bench part1.py < input.txt"
 alias aot2="bench part2.py < input.txt"
 alias aoc1='aos1; echo; aot1'
 alias aoc2='aos2; echo; aot2'
+
+function aoc-load () {
+    local YEAR=$(pwd | rev | cut -d'/' -f2 | rev)
+    local DAY_DIR=$(pwd | rev | cut -d'/' -f1 | rev)
+    local DAY=$(echo "$DAY_DIR" | sed 's/day_//' | sed 's/^0//')
+
+    if [[ ! $YEAR =~ ^[0-9]{4}$ ]] || [[ ! $DAY =~ ^[0-9]{1,2}$ ]]; then
+        echo "Error: Could not parse Year/Day from path: $(pwd)"
+        echo "Ensure you are in a directory like .../YYYY/day_DD"
+        return 1
+    fi
+
+    echo "Fetching input for $YEAR day $DAY..."
+
+    curl --cookie "session=$AOC_COOKIE" "https://adventofcode.com/$YEAR/day/$DAY/input" > input.txt
+}

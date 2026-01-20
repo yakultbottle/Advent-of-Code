@@ -1,2 +1,7 @@
+# Hide all puzzles inputs as per request from Eric
 input.txt
 example*.txt
+
+# Cookies
+.env
+.python-version
