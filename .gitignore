@@ -2,6 +2,6 @@
 input.txt
 example*.txt
 
-# Cookies
 .env
 .python-version
+pyrightconfig.json
