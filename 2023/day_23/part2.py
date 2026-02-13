@@ -1,5 +1,3 @@
-from collections import deque, defaultdict
-
 grid = [list(row) for row in open(0).read().strip().split()]
 
 width, height = len(grid[0]), len(grid)
@@ -33,63 +31,52 @@ for y in range(height):
         if count > 2:
             junctions.add((x, y))
 
-seen = [[False for _ in range(width)] for _ in range(height)]
+adj_list = {junc: {} for junc in junctions}
 
-def find_next_junction(x: int, y: int, steps: int) -> tuple[int, int, int]:
-    if (x, y) in junctions:
-        return (x, y, steps)
-    seen[y][x] = True
+for junc in junctions:
+    sx, sy = junc
+    stack = [(sx, sy, 0)]
+    seen = {(sx, sy)}
 
-    for dx, dy in dirs:
-        nx, ny = x + dx, y + dy
+    while stack:
+        x, y, steps = stack.pop()
+        seen.add((x, y))
 
-        if not (nx in range(width) and ny in range(height)):
+        for dx, dy in dirs:
+            nx, ny = x + dx, y + dy
+
+            if not (nx in range(width) and ny in range(height)):
+                continue
+            if grid[ny][nx] == "#":
+                continue
+            if (nx, ny) in seen:
+                continue
+
+            if (nx, ny) != junc and (nx, ny) in junctions:
+                adj_list[junc][(nx, ny)] = steps + 1
+            else:
+                stack.append((nx, ny, steps + 1))
+
+fast_adj_list = {}
+int_map = {}
+
+for i, node in enumerate(junctions):
+    int_map[node] = 2**i
+for here, there in adj_list.items():
+    fast_adj_list[int_map[here]] = {int_map[node]: weight for node, weight in there.items()}
+
+def dfs(curr: int, visited: int) -> int:
+    if curr == int_map[end]:
+        return 0
+
+    maximum = -float('inf')
+    for next in fast_adj_list[curr]:
+        if visited & next:
             continue
-        if grid[ny][nx] == "#":
-            continue
-        if seen[ny][nx]:
-            continue
+        maximum = max(maximum, dfs(next, visited | curr) + fast_adj_list[curr][next])
 
-        return find_next_junction(nx, ny, steps + 1)
-
-frontier: deque[tuple[int, int]] = deque([start])
-adj_list = defaultdict(list)
-
-while frontier:
-    x, y = frontier.popleft()
-    seen[y][x] = True
-
-    for dx, dy in dirs:
-        nx, ny = x + dx, y + dy
-
-        if not (nx in range(width) and ny in range(height)):
-            continue
-        if grid[ny][nx] == "#":
-            continue
-        if seen[ny][nx]:
-            continue
-
-        new_x, new_y, steps = find_next_junction(nx, ny, 1)
-        adj_list[(new_x, new_y)].append((x, y, steps))
-        adj_list[(x, y)].append((new_x, new_y, steps))
-        frontier.append((new_x, new_y))
-
-visited = set()
-def dfs(x: int, y: int, steps: int) -> int:
-    if (x, y) == end:
-        return steps
-
-    visited.add((x, y))
-
-    maximum = -1
-    for nx, ny, num_steps in adj_list[(x, y)]:
-        if (nx, ny) in visited:
-            continue
-        candidate = dfs(nx, ny, steps + num_steps)
-        maximum = max(maximum, candidate)
-
-    visited.remove((x, y))
     return maximum
 
-ans = dfs(start[0], start[1], 0)
+ans = dfs(int_map[start], 0)
 print(ans)
+
