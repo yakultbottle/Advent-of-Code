@@ -9,8 +9,8 @@ fi
 alias bench="$ROOT/bench"
 alias aoc="cd \"$ROOT\""
 
-alias aos1="bench part1.py < example.txt"
-alias aos2="bench part2.py < example.txt"
+alias aos1="EXAMPLE=1 bench part1.py < example.txt"
+alias aos2="EXAMPLE=1 bench part2.py < example.txt"
 alias aot1="bench part1.py < input.txt"
 alias aot2="bench part2.py < input.txt"
 alias aoc1='aos1; echo; aot1'
