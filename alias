@@ -1,4 +1,4 @@
-ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ROOT="${0:A:h}"
 
 if [ -f "$ROOT/.env" ]; then
     source "$ROOT/.env"
