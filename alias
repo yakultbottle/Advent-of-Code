@@ -30,4 +30,76 @@ function aoc-load () {
     echo "Fetching input for $YEAR day $DAY..."
 
     curl --cookie "session=$AOC_COOKIE" "https://adventofcode.com/$YEAR/day/$DAY/input" > input.txt
+
+    cat ./input.txt
+}
+
+function aoc-stats() {
+    # Helper function to format seconds into MM:SS or HH:MM:SS
+    format_duration() {
+        local T=$1
+        if [[ $T -lt 0 ]]; then
+            echo "00:00 (Out of order)"
+            return
+        fi
+        local H=$((T / 3600))
+        local M=$(( (T / 60) % 60 ))
+        local S=$((T % 60))
+        if [[ $H -gt 0 ]]; then
+            printf '%02d:%02d:%02d\n' $H $M $S
+        else
+            printf '%02d:%02d\n' $M $S
+        fi
+    }
+
+    # Ensure we have at least the input file to start measuring
+    if [[ ! -f "input.txt" ]]; then
+        echo "Error: input.txt not found."
+        return 1
+    fi
+
+    echo "--- Advent of Code: Day $(pwd | rev | cut -d'/' -f1 | rev | sed 's/day_//' | sed 's/^0//') Stats ---"
+
+    # Grab the baseline time from when you downloaded the input
+    local t_input=$(stat -c %Y input.txt)
+    local t_example t_part1 t_part2
+
+    # 1. Reading / Example Setup Time
+    if [[ -f "example.txt" ]]; then
+        t_example=$(stat -c %Y example.txt)
+        local diff_read=$((t_example - t_input))
+        echo "Time reading problem : $(format_duration $diff_read)"
+    else
+        echo "Error: example.txt not found"
+        return 1
+    fi
+
+    # 2. Part 1 Time
+    if [[ -f "part1.py" ]]; then
+        t_part1=$(stat -c %Y part1.py)
+        local diff_p1=$((t_part1 - t_example))
+        echo "Part 1          : $(format_duration $diff_p1)"
+    else
+        # If part1 isn't done, show a live timer
+        local now=$(date +%s)
+        echo "Part 1          : In progress... (Current: $(format_duration $((now - t_example))))"
+        return 0
+    fi
+
+    # 3. Part 2 Time and Total Time
+    if [[ -f "part2.py" ]]; then
+        t_part2=$(stat -c %Y part2.py)
+        local diff_p2=$((t_part2 - t_part1))
+        local diff_total=$((t_part2 - t_input))
+
+        echo "Part 2          : $(format_duration $diff_p2)"
+        echo "--------------------------"
+        echo "Total Time      : $(format_duration $diff_total)"
+    else
+        # If part2 isn't done, show a live timer for part 2 and total time
+        local now=$(date +%s)
+        echo "Part 2          : In progress... (Current: $(format_duration $((now - t_part1))))"
+        echo "--------------------------"
+        echo "Total Time (Run): $(format_duration $((now - t_input)))"
+    fi
 }
