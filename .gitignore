@@ -5,3 +5,4 @@ example*.txt
 .env
 .python-version
 pyrightconfig.json
+/2022/day_17/shapes.txt
